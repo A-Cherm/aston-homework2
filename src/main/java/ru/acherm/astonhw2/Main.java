@@ -1,12 +1,13 @@
 package ru.acherm.astonhw2;
 
+import ru.acherm.astonhw2.dao.UserDaoImpl;
 import ru.acherm.astonhw2.model.User;
 import ru.acherm.astonhw2.service.UserService;
 import ru.acherm.astonhw2.service.UserServiceImpl;
 
 public class Main {
     public static void main(String[] args) {
-        UserService userService = new UserServiceImpl();
+        UserService userService = new UserServiceImpl(new UserDaoImpl());
         System.out.println("Старт");
 
         User user1 = new User("user1", "a@mail", 20);
