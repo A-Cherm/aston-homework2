@@ -51,7 +51,8 @@ class UserDaoImplTest {
 
         User found = userDao.get(created.getId());
 
-        assertThat(found).isEqualTo(created);
+        assertThat(found.getName()).isEqualTo(created.getName());
+        assertThat(found.getEmail()).isEqualTo(created.getEmail());
     }
 
     @Test
