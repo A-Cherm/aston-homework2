@@ -11,6 +11,10 @@ public class UserDaoImpl implements UserDao {
         sessionFactory = new Configuration().configure().buildSessionFactory();
     }
 
+    public UserDaoImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
     @Override
     public User create(User user) {
         try {
