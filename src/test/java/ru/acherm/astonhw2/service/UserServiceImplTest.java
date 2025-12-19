@@ -1,64 +1,81 @@
 package ru.acherm.astonhw2.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import ru.acherm.astonhw2.dao.UserDao;
-import ru.acherm.astonhw2.dao.UserDaoImpl;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import ru.acherm.astonhw2.dao.UserRepository;
+import ru.acherm.astonhw2.dto.UserDto;
+import ru.acherm.astonhw2.mapper.UserMapper;
 import ru.acherm.astonhw2.model.User;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-    private UserService userService;
-    private UserDao userDao;
-
-    @BeforeEach
-    void setup() {
-        userDao = Mockito.mock(UserDaoImpl.class);
-        userService = new UserServiceImpl(userDao);
-    }
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private UserMapper userMapper;
+    @InjectMocks
+    private UserServiceImpl userService;
 
     @Test
     void shouldReturnCreatedUser() {
-        User newUser = new User("user", "user@ya.ru", 20);
+        UserDto newUser = new UserDto("user", "user@ya.ru", 20);
         User created = new User("user", "user@ya.ru", 20);
-        when(userDao.create(newUser)).thenReturn(created);
+        when(userMapper.toDto(any())).thenReturn(newUser);
 
-        User result = userService.create(newUser);
+        UserDto result = userService.create(newUser);
 
-        verify(userDao, times(1)).create(newUser);
-        assertThat(result).isEqualTo(created);
+        verify(userRepository, times(1)).save(any());
+        assertThat(result.getName()).isEqualTo(created.getName());
+        assertThat(result.getEmail()).isEqualTo(created.getEmail());
+        assertThat(result.getAge()).isEqualTo(created.getAge());
     }
 
     @Test
     void shouldReturnFoundUser() {
         User user = new User("user", "user@ya.ru", 20);
-        when(userDao.get(1L)).thenReturn(user);
+        UserDto userDto = new UserDto("user", "user@ya.ru", 20);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.toDto(any())).thenReturn(userDto);
 
-        User result = userService.get(1L);
+        UserDto result = userService.get(1L);
 
-        verify(userDao, times(1)).get(1L);
-        assertThat(result).isEqualTo(user);
+        verify(userRepository, times(1)).findById(1L);
+        assertThat(result.getName()).isEqualTo(user.getName());
+        assertThat(result.getEmail()).isEqualTo(user.getEmail());
+        assertThat(result.getAge()).isEqualTo(user.getAge());
     }
 
     @Test
     void shouldReturnUpdatedUser() {
         User user = new User("user", "user@ya.ru", 20);
-        User updated = new User("user", "user@ya.ru", 20);
-        when(userDao.update(user)).thenReturn(updated);
+        user.setId(1L);
+        UserDto userDto = new UserDto(1L, "user", "user@ya.ru", 20, null);
+        User updated = new User("new user", "newuser@ya.ru", 20);
+        UserDto updatedDto = new UserDto("new user", "newuser@ya.ru", 20);
+        when(userRepository.findById(userDto.getId())).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.toDto(user)).thenReturn(updatedDto);
 
-        User result = userService.update(user);
+        UserDto result = userService.update(userDto);
 
-        verify(userDao, times(1)).update(user);
-        assertThat(result).isEqualTo(updated);
+        verify(userRepository, times(1)).save(any());
+        assertThat(result.getName()).isEqualTo(updated.getName());
+        assertThat(result.getEmail()).isEqualTo(updated.getEmail());
+        assertThat(result.getAge()).isEqualTo(updated.getAge());
     }
 
     @Test
     void shouldDeleteUser() {
         userService.delete(1L);
 
-        verify(userDao, times(1)).delete(1L);
+        verify(userRepository, times(1)).deleteById(1L);
     }
 }

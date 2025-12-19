@@ -1,13 +1,13 @@
 package ru.acherm.astonhw2.service;
 
-import ru.acherm.astonhw2.model.User;
+import ru.acherm.astonhw2.dto.UserDto;
 
 public interface UserService {
-    User create(User user);
+    UserDto create(UserDto user);
 
-    User get(long id);
+    UserDto get(long id);
 
-    User update(User user);
+    UserDto update(UserDto user);
 
     void delete(long id);
 }
