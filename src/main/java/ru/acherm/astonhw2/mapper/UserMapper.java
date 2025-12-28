@@ -2,6 +2,8 @@ package ru.acherm.astonhw2.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.acherm.astonhw2.dto.UserDto;
+import ru.acherm.astonhw2.event.UserCreatedEvent;
+import ru.acherm.astonhw2.event.UserDeletedEvent;
 import ru.acherm.astonhw2.model.User;
 
 @Component
@@ -21,6 +23,23 @@ public class UserMapper {
                 userDto.getName(),
                 userDto.getEmail(),
                 userDto.getAge()
+        );
+    }
+
+    public UserCreatedEvent toCreatedEvent(UserDto userDto) {
+        return new UserCreatedEvent(
+                userDto.getId(),
+                userDto.getName(),
+                userDto.getEmail(),
+                userDto.getAge(),
+                userDto.getCreatedAt()
+        );
+    }
+
+    public UserDeletedEvent toDeletedEvent(User user) {
+        return new UserDeletedEvent(
+                user.getId(),
+                user.getEmail()
         );
     }
 }

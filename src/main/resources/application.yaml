@@ -1,3 +1,5 @@
+server.port: 8080
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5435/postgres
@@ -11,3 +13,8 @@ spring:
     hibernate:
       ddl-auto: drop-and-create
     show-sql: true
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
