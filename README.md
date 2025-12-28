@@ -4,6 +4,11 @@
 - user: postgres
 - pass: postgres
 
-Можно поднять в контейнере через
+### Параметры Kafka
 
-> docker compose up
+- nodes: 1
+- host: localhost:9092
+
+Можно поднять в контейнерах через
+
+> docker compose up -d
