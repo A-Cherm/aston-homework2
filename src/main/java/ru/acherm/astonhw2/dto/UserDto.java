@@ -1,12 +1,21 @@
 package ru.acherm.astonhw2.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
+@Schema(description = "Сущность пользователя")
 public class UserDto {
+    @Schema(description = "Id пользователя", example = "1")
     private Long id;
+    @Schema(description = "Имя пользователя", example = "Bob")
     private String name;
+    @Schema(description = "Почта пользователя", example = "Bob@mail.com")
     private String email;
+    @Schema(description = "Возраст пользователя", example = "33")
     private Integer age;
+    @Schema(description = "Дата и время создания пользователя", example = "2000-01-01T00:00:00",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createdAt;
 
     public UserDto() {

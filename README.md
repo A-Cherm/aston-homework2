@@ -1,3 +1,7 @@
+### OpenApi
+
+http://localhost:8080/swagger-ui/index.html
+
 ### Параметры БД
 
 - url: localhost:5435/postgres
