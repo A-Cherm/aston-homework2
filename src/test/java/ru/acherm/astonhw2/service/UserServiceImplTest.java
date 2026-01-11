@@ -5,11 +5,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 import ru.acherm.astonhw2.dao.UserRepository;
 import ru.acherm.astonhw2.dto.UserDto;
+import ru.acherm.astonhw2.event.UserCreatedEvent;
+import ru.acherm.astonhw2.event.UserDeletedEvent;
+import ru.acherm.astonhw2.event.UserEvent;
 import ru.acherm.astonhw2.mapper.UserMapper;
 import ru.acherm.astonhw2.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +26,8 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private KafkaTemplate<String, UserEvent> kafkaTemplate;
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -28,7 +35,10 @@ class UserServiceImplTest {
     void shouldReturnCreatedUser() {
         UserDto newUser = new UserDto("user", "user@ya.ru", 20);
         User created = new User("user", "user@ya.ru", 20);
+        UserCreatedEvent event = new UserCreatedEvent(1L, created.getName(), created.getEmail(),
+                created.getAge(), LocalDateTime.now());
         when(userMapper.toDto(any())).thenReturn(newUser);
+        when(userMapper.toCreatedEvent(any())).thenReturn(event);
 
         UserDto result = userService.create(newUser);
 
@@ -74,6 +84,12 @@ class UserServiceImplTest {
 
     @Test
     void shouldDeleteUser() {
+        User user = new User("user", "user@ya.ru", 20);
+        user.setId(1L);
+        UserDeletedEvent event = new UserDeletedEvent(1L, "test");
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userMapper.toDeletedEvent(any())).thenReturn(event);
+
         userService.delete(1L);
 
         verify(userRepository, times(1)).deleteById(1L);
