@@ -1,6 +1,7 @@
 server.port: 8080
 
 spring:
+  application.name: user-service
   datasource:
     url: jdbc:postgresql://localhost:5435/postgres
     username: postgres
@@ -24,3 +25,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       group-id: user-events
       properties.spring.json.trusted.packages: ru.acherm.astonhw2.event
+
+eureka:
+  client:
+    serviceUrl.defaultZone: http://localhost:8081/eureka
