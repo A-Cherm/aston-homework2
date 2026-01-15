@@ -27,5 +27,8 @@ spring:
       properties.spring.json.trusted.packages: ru.acherm.astonhw2.event
 
 eureka:
+  instance:
+    hostname: localhost
   client:
+    registerWithEureka: true
     serviceUrl.defaultZone: http://localhost:8081/eureka
