@@ -25,6 +25,8 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       group-id: user-events
       properties.spring.json.trusted.packages: ru.acherm.astonhw2.event
+  config:
+    import: optional:configserver:http://localhost:8888
 
 eureka:
   instance:

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.acherm.astonhw2.dto.UserDto;
@@ -14,6 +15,8 @@ import ru.acherm.astonhw2.service.UserService;
 @Tag(name = "Пользователи", description = "Управление пользователями")
 public class UserController {
     private final UserService userService;
+    @Value("${config.test:empty}")
+    private String test;
 
     @Autowired
     public UserController(UserService userService) {
@@ -56,5 +59,10 @@ public class UserController {
             })
     public void delete(@PathVariable long id) {
         userService.delete(id);
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return test;
     }
 }
