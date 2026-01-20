@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16.1
-    container_name: astonhw2-postgres
+    container_name: astonhw-postgres
     ports:
       - "5435:5432"
     environment:
@@ -13,9 +13,10 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+
   broker:
     image: apache/kafka:3.9.1
-    container_name: broker
+    container_name: astonhw-broker
     ports:
       - "9092:9092"
     environment:
@@ -34,3 +35,54 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_SHARE_COORDINATOR_STATE_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR: 1
+
+  eureka-server:
+    build: eureka-server
+    container_name: astonhw-eureka
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8081/eureka
+
+  gateway:
+    build: gateway
+    container_name: astonhw-gateway
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_INSTANCE_HOSTNAME=gateway
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8081/eureka
+    depends_on:
+      - eureka-server
+
+  config-server:
+    build: config-server
+    container_name: astonhw-config
+    ports:
+      - "8888:8888"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8081/eureka
+    depends_on:
+      - eureka-server
+
+  user-service:
+    build: user-service
+    container_name: astonhw-user-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:19092
+      - SPRING_KAFKA_PRODUCER_BOOTSTRAP_SERVERS=broker:19092
+      - SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS=broker:19092
+      - EUREKA_INSTANCE_HOSTNAME=user-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8081/eureka
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
+    depends_on:
+      - db
+      - broker
+      - eureka-server
+      - gateway
+      - config-server
